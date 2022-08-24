@@ -1,4 +1,5 @@
-﻿using Rocket.API.Collections;
+﻿using BadJujuKillAmmoFill.AmmoGroupHelpers;
+using Rocket.API.Collections;
 using Rocket.Core.Plugins;
 using Rocket.Unturned;
 using Rocket.Unturned.Events;
@@ -24,7 +25,7 @@ namespace BadJujuKillAmmoFill
             Rocket.Core.Logging.Logger.Log("####################################", ConsoleColor.Yellow);
             Rocket.Core.Logging.Logger.Log("#      Thanks you for buying          #", ConsoleColor.Yellow);
             Rocket.Core.Logging.Logger.Log("#      Plugin Created By BadJuju     #", ConsoleColor.Yellow);
-            Rocket.Core.Logging.Logger.Log("#      Plugin Version: 1.0.0.0         #", ConsoleColor.Yellow);
+            Rocket.Core.Logging.Logger.Log("#      Plugin Version: 1.1.0.0         #", ConsoleColor.Yellow);
             Rocket.Core.Logging.Logger.Log("####################################", ConsoleColor.Yellow);
             Rocket.Core.Logging.Logger.Log("", ConsoleColor.White);
             Rocket.Core.Logging.Logger.Log(NamePlugin + " is successfully loaded!", ConsoleColor.Green); 
@@ -41,10 +42,14 @@ namespace BadJujuKillAmmoFill
 
         private void DoAutoReload(UnturnedPlayer uPlayer, ushort itemId)
         {
+            if (!GetGroup.getAmmoGroup(uPlayer, out AmmoGroup group))
+                return;
+          
             PlayerEquipment equip = uPlayer.Player.equipment;
             var ammo = equip.state[10];
             var ammoId = (ushort)(equip.state[8] | equip.state[9] << 8);
-            
+            if (group.Blaclist.Contains(ammoId))
+                return;
             if (ammo == 1 && IsBow(itemId))
             {
                 ArrowID[uPlayer.CSteamID] = ammoId;
